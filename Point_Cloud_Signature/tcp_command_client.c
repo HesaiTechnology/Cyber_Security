@@ -39,17 +39,16 @@
 #include "openssl/err.h"
 
 /**
- * Specify the client certificate and the corresponding
- * private key for double-end authentication of PTCs. 
- * The certificate is sent to Lidar to verify the identity of the client.
+ * Under mTLS (two-way auth) mode, specify the client certificate chain and its private key. 
+ * The lidar uses this certificate to verify the client's identity.
 */
 #define CLIENT_CRT "cert/client.test.cert.pem"
 #define CLIENT_RSA_PRIVATE  "cert/client.test.key.pem"
+
 /**
- * Specify the client certificate chain for 
- * single-ended verification of PTCs to verify 
- * the validity of the certificate sent by the server.
- */
+ * Under both TLS (one-way auth) and mTLS mode, specify Hesai's certificate chain.
+ * The client uses this certificate to verify the validity of a lidar unit's entity certificate.
+*/
 #define CA_SERVER_CRT "cert/ca_client.pem"
 
 
@@ -421,14 +420,14 @@ static PTC_ErrCode tcpCommandClient_SendCmd(TcpCommandClient *client , TC_Comman
 	ret = tcpCommandReadCommand(ssl, &feedBack);
 	if(ret != 0)
 	{
-		printf("Receive feed back failed!!!\n");
+		printf("Receive feedback failed!!!\n");
 
 		err_code = PTC_ERROR_TRANSFER_FAILED;
 
 		goto end;
 
 	}
-	if( g_debug_print_on )  printf("feed back : %d %d %d \n", cmd->ret_size , cmd->header.ret_code , cmd->header.cmd);
+	if( g_debug_print_on )  printf("feedback : %d %d %d \n", cmd->ret_size , cmd->header.ret_code , cmd->header.cmd);
 
 	cmd->ret_data = feedBack.ret_data;
 	cmd->ret_size = feedBack.ret_size;
@@ -614,12 +613,12 @@ static PTC_ErrCode tcpCommandClient_SendCmd(TcpCommandClient *client , TC_Comman
 	ret = tcpCommandReadCommand(fd , &feedBack);
 	if(ret != 0)
 	{
-		printf("Receive feed back failed!!!\n");
+		printf("Receive feedback failed!!!\n");
 		close(fd);
 		pthread_mutex_unlock(&client->lock);
 		return PTC_ERROR_TRANSFER_FAILED;
 	}
-	if( g_debug_print_on )  printf("feed back : %d %d %d \n", cmd->ret_size , cmd->header.ret_code , cmd->header.cmd);
+	if( g_debug_print_on )  printf("feedback : %d %d %d \n", cmd->ret_size , cmd->header.ret_code , cmd->header.cmd);
 
 	cmd->ret_data = feedBack.ret_data;
 	cmd->ret_size = feedBack.ret_size;
@@ -703,7 +702,7 @@ PTC_ErrCode TcpSigStart(void * handle)
 	ret = session_get_random_number(&client_random);
 	if( ret != 0)
 	{
-		printf("generate random fail!\n");
+		printf("generate random failed!\n");
 		return -1;
 	}
 	memcpy(msg.data, client_random.data, client_random.datal);
@@ -752,7 +751,7 @@ PTC_ErrCode TcpSigStart(void * handle)
 	memcpy(server_random.data, rsp.data, rsp.datal);
 	server_random.datal = rsp.datal;
 	
-	printf_cipher_message("server random form lidar", server_random.data, server_random.datal);
+	printf_cipher_message("server random from lidar", server_random.data, server_random.datal);
 
 	memset(&session_key, 0, sizeof(session_key));
 	if(session_cal_session_key(server_random, client_random, &session_key) == 1)
@@ -764,7 +763,7 @@ PTC_ErrCode TcpSigStart(void * handle)
 
 	if(ptcs_set_session_hmac_key(session_key) == 1)
 	{
-		printf("set session hmac key err!\n");
+		printf("set session hmac key error!\n");
 		return -1;
 	}
 
@@ -806,7 +805,7 @@ PTC_ErrCode TcpSigQuery(void * handle)
 		return -1;
 	}
 
-	printf("get rsp from lidar: siguature flag [%s] \n", *cmd.ret_data == 0 ? "OFF" : "ON");
+	printf("get rsp from lidar: signature flag [%s] \n", *cmd.ret_data == 0 ? "OFF" : "ON");
 
 	free(cmd.data);
 	free(cmd.ret_data);

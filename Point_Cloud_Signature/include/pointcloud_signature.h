@@ -4,7 +4,7 @@
 #include <hesai_security.h>
 
 /**
- * storage the hmac key for point cloud signature, during this seession.
+ * store the hmac key for point cloud signature, during this session.
 */
 struct session_hmac_key{
     session_key_st key;
@@ -14,7 +14,7 @@ struct session_hmac_key{
 /*------During the key negotiation process------*/
 /**
  * session_get_random_number() - generate random.
- * @random: Store generated random number.
+ * @random: store generated random number.
  * @return: 0 - success; 1 - error;
 */
 int session_get_random_number(random_st *random);
@@ -40,13 +40,13 @@ int ptcs_set_session_hmac_key(const session_key_st session_key);
 
 /**
  * ptcs_pointcloud_hmac_verify() - verify the message whether right.
- * @sessionkey: Session key for signing and verifying point cloud data.
- * @signedpc: Signed point cloud.
- * @signedpc_len: the length of @signedpc.
- * @pointcloud: the real point cloud. 
- *              If it is NULL, the @pointcloud and @pointcloud_len will be ignored. 
- * @pointcloud_len: the length of @pointcloud. 
- *              If it is NULL, the @pointcloud and @pointcloud_len will be ignored. 
+ * @sessionkey: session key for signing and verifying point cloud data.
+ * @signedpc: signed point cloud.
+ * @signedpc_len: length of @signedpc.
+ * @pointcloud: real point cloud
+ *              If it is NULL, then @pointcloud and @pointcloud_len will be ignored. 
+ * @pointcloud_len: length of @pointcloud
+ *              If it is NULL, then @pointcloud and @pointcloud_len will be ignored. 
  * @return: 0-success; 1-error.
 */
 int ptcs_pointcloud_hmac_verify(const char *signedpc, const int signedpc_len, 

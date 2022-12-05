@@ -93,7 +93,7 @@ int random_get(unsigned char *random, int randoml)
 {
     if(randoml <= 0 || random == NULL)
     {
-        printf("the parameter is error!");
+        printf("parameter error!");
         return 1;
     }
     int fd;

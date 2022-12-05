@@ -32,12 +32,12 @@ static int shared_secret_key_set( const char *ssk_path )
     int ssk_l = 0;
     if(read_file(ssk_path, ssk_buf, &ssk_l))
     {
-        printf("read ssk file failed!\n");
+        printf("reading ssk file failed!\n");
         return 1;
     }
     if(HKDF_ikm_init(ssk_buf, ssk_l))
     {
-        printf("ssk set failed\n");
+        printf("ssk setting failed\n");
         return 1;
     }
     return 0;
@@ -62,7 +62,7 @@ static int process_signed_point_cloud( void *handle, int port)
     struct sockaddr_in sig_addr;
     if ((ufd = socket(AF_INET, SOCK_DGRAM, 0)) == -1)
     {
-        printf("socket fail\n");
+        printf("socket failed\n");
         return 1;
     }
     if (setsockopt(ufd, SOL_SOCKET, SO_REUSEADDR, &ioptval, sizeof(int)) < 0)
@@ -93,7 +93,7 @@ static int process_signed_point_cloud( void *handle, int port)
         printf_msg("\npointcloud",recv_msg, recvl);
         if(ptcs_pointcloud_hmac_verify(recv_msg, recvl, pointcloud, &pclen))
         {
-            printf("verify failed! num\n");
+            printf("verification failed! num\n");
             ret = 1;
             break;
         }
@@ -114,7 +114,7 @@ int main(int argc , char *argv[])
 		printf("\t\t <ip> -- lidar ip address such as 192.168.1.201\n" );
 		printf("\t\t <port> -- shall be 9347\n" );
         printf("\t\t <cmd> == signatureStop  - stop point cloud signature\n" );
-		printf("\t\t <cmd> == signatureQuery - Query whether the point cloud signature is ON or OFF.\n" );
+		printf("\t\t <cmd> == signatureQuery - query whether the point cloud signature is ON or OFF.\n" );
 		printf("\t\t <cmd> == signatureStart - point cloud signature start!\n" );
 		return -1;
 	}
@@ -141,14 +141,14 @@ int main(int argc , char *argv[])
         if(argc < 6)
         {
             printf("please input: <udp port> <ssk file path> <enc> \n");
-            printf("\t\t<udp port> == shall be 2368 - read point cloud form this udp port!\n" );
-            printf("\t\t<ssk file path> == the path of shared secret key! - may be './ucs/ssk/ssk.nky'\n");
+            printf("\t\t<udp port> == shall be 2368 - read point cloud from this udp port!\n" );
+            printf("\t\t<ssk file path> == path of the shared secret key! may be './ucs/ssk/ssk.nky'\n");
             return 1;
         }
 
         if(shared_secret_key_set(argv[5]))
         {
-            printf("shared secret key set fail!\n");
+            printf("shared secret key setting failed!\n");
             free(handle);
             return 1;
         }
@@ -156,7 +156,7 @@ int main(int argc , char *argv[])
         PTC_ErrCode errorCode;
         errorCode = TcpSigStart(handle);
         if(errorCode != 0){
-            printf("signature seession key calculate failed!\n");
+            printf("signature session key calculation failed!\n");
             free(handle); 
 		    return errorCode;
         }

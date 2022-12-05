@@ -53,14 +53,14 @@ int HKDF_get_ikm(unsigned char *ikm, size_t *ikm_len)
 int HKDF_ikm_init(const char *ssk, const int ssk_len)
 {
     if( !ssk || ssk_len <= 0 || ssk_len > sizeof(g_ikm.ikm) )
-        handle_error("paremeter error");
+        handle_error("parameter error");
 
     SET_ZERO(g_ikm);
     g_ikm.len = ssk_len;
     memcpy(g_ikm.ikm, ssk, ssk_len);
     g_ikm.initial = 1;
     if( NULL == SHA256((unsigned char*)&g_ikm, sizeof(g_ikm)-sizeof(g_ikm.md), g_ikm.md))
-        handle_error("HASH256 Calculate failed!");
+        handle_error("HASH256 calculation failed!");
 
     return 0;
 }
