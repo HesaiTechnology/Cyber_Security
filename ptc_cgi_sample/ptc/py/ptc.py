@@ -2,8 +2,8 @@ import socket, ssl, pprint, time
 import random
 import struct
 
-default_host = "192.168.1.201"
-default_port = 9347
+default_host = "192.168.1.201" # Change this to your Lidar IP
+default_port = 9347 # Change this to your Lidar PTC Port
 
 class PTC:
     def __init__(self, host=default_host, port=default_port):
@@ -74,5 +74,5 @@ class PTC:
 
 if __name__ == "__main__":
     ss = PTC()
-    print(ss.sender('40', None))
+    print(ss.sender('40', None)) # Example command to 'Get Current Fault Log', change the command code and payload as needed
     ss.closeSocket()
